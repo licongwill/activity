@@ -16,6 +16,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
 	</properties>
 
 	<dependencies>
@@ -47,14 +48,87 @@
 			</exclusions>
 		</dependency>
 	</dependencies>
-
+	<profiles>
+		<profile>
+			<!-- 开发环境 -->
+			<id>dev</id>
+			<properties>
+				<profiles.env>dev</profiles.env>
+				<activeByDefault>true</activeByDefault>
+			</properties>
+		</profile>
+		<profile>
+			<!-- 测试环境 -->
+			<id>test</id>
+			<properties>
+				<profiles.env>test</profiles.env>
+				<activeByDefault>false</activeByDefault>
+			</properties>
+		</profile>
+		<profile>
+			<!-- 预发环境 -->
+			<id>stage</id>
+			<properties>
+				<profiles.env>stage</profiles.env>
+				<activeByDefault>false</activeByDefault>
+			</properties>
+		</profile>
+		<profile>
+			<!-- 生产环境 -->
+			<id>prod</id>
+			<properties>
+				<profiles.env>prod</profiles.env>
+				<activeByDefault>false</activeByDefault>
+			</properties>
+		</profile>
+	</profiles>
 	<build>
+		<finalName>activity</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<fork>true</fork>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven-surefire-plugin.version}</version>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
 			</plugin>
 		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<!-- 资源根目录排除各环境的配置，使用单独的资源目录来指定 -->
+				<excludes>
+					<exclude>config-dev/*</exclude>
+					<exclude>config-test/*</exclude>
+					<exclude>config-stage/*</exclude>
+					<exclude>config-prod/*</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<!-- 根据参数指定资源目录 -->
+				<directory>src/main/resources/config-${profiles.env}</directory>
+			</resource>
+		</resources>
 	</build>
+	<distributionManagement>
+		<repository>
+			<id>maven-releases</id>
+			<name>maven-releases</name>
+			<url>http://maven.int.ybm100.com/repository/maven-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>maven-snapshots</id>
+			<name>maven-snapshots</name>
+			<url>http://maven.int.ybm100.com/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 </project>

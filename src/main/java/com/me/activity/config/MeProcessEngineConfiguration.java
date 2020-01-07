@@ -1,12 +1,20 @@
 package com.me.activity.config;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.activiti.engine.ProcessEngineConfiguration;
-import org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import com.alibaba.druid.pool.DruidDataSource;
+import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.RepositoryService;
+import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.activiti.spring.ProcessEngineFactoryBean;
+import org.activiti.spring.SpringProcessEngineConfiguration;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.PlatformTransactionManager;
+
+import javax.sql.DataSource;
 
 /**
  * @program: activity
@@ -15,43 +23,36 @@ import org.springframework.context.annotation.Configuration;
  * @create: 2020-01-07 14:56
  **/
 @Configuration
-@ConfigurationProperties(prefix = "me.process.engine")
-@Setter
-@Getter
 public class MeProcessEngineConfiguration {
-    /*数据库连接地址*/
-    private String jdbcUrl;
-    /*驱动类*/
-    private String jdbcDriver;
-    /*数据库用户名*/
-    private String jdbcUsername;
-    /*数据库类型*/
-    private String databaseType;
-    /*密码*/
-    private String jdbcPassword;
-    /*数据库更新模式*/
-    private String databaseSchemaUpdate;
-    /*是否异步执行*/
-    private boolean asyncExecutorActivate;
-    /*邮箱地址*/
-    private String mailServerHost;
-    /*邮箱用户名*/
-    private String mailServerUsername;
-    /*邮箱密码*/
-    private String mailServerPassword;
-    /*邮箱服务器*/
-    private int mailServerPort;
 
-    @Bean(name = "processEngineConfiguration")
-    public ProcessEngineConfiguration processEngineConfiguration(){
-        StandaloneProcessEngineConfiguration configuration = new StandaloneProcessEngineConfiguration();
-        configuration.setJdbcUrl(this.getJdbcUrl());
-        configuration.setJdbcDriver(this.getJdbcDriver());
-        configuration.setJdbcUsername(this.getJdbcUsername());
-        configuration.setDatabaseType(this.getDatabaseType());
-        configuration.setJdbcPassword(this.getJdbcPassword());
-        configuration.setDatabaseSchema(this.getDatabaseSchemaUpdate());
+    @Bean(name = "activityProcessEngineConfiguration")
+    @DependsOn(value = {"dataSource","coreTransactionManager"})
+    @ConditionalOnMissingBean(ProcessEngineConfigurationImpl.class)
+    public ProcessEngineConfigurationImpl processEngineConfiguration(@Qualifier("dataSource") DataSource dataSource,
+            PlatformTransactionManager coreTransactionManager){
+        SpringProcessEngineConfiguration configuration = new SpringProcessEngineConfiguration();
+        configuration.setDataSource(dataSource);
+        configuration.setTransactionManager(coreTransactionManager);
         configuration.setAsyncExecutorActivate(false);
+        configuration.setDatabaseSchemaUpdate("true");
         return configuration;
+    }
+
+    @Bean("activityProcessEngine")
+    @DependsOn(value = {"activityProcessEngineConfiguration"})
+    @ConditionalOnMissingBean(ProcessEngineFactoryBean.class)
+    public ProcessEngine processEngineFactoryBean(ProcessEngineConfigurationImpl activityProcessEngineConfiguration) throws Exception {
+        ProcessEngineFactoryBean factoryBean = new ProcessEngineFactoryBean();
+        factoryBean.setProcessEngineConfiguration(activityProcessEngineConfiguration);
+        ProcessEngine processEngine = factoryBean.getObject();
+
+        return processEngine;
+    }
+
+    @Bean("activityRepositoryService")
+    @DependsOn(value = {"activityProcessEngineFactoryBean"})
+    public RepositoryService repositoryService(ProcessEngine processEngine){
+        RepositoryService repositoryService = processEngine.getRepositoryService();
+        return repositoryService;
     }
 }

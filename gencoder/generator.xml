@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+     <classPathEntry location="F:/gencoder/oracle11-6.0.jar"/>
+	<context id="contextTable" targetRuntime="MyBatis3" defaultModelType="flat">
+		<!-- <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+
+		<plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin" />
+         -->
+		<commentGenerator>
+			<property name="suppressAllComments" value="false" />
+			<property name="suppressDate" value="false" />
+		</commentGenerator>
+
+		<jdbcConnection driverClass="oracle.jdbc.OracleDriver"
+			connectionURL="jdbc:oracle:thin:@192.168.1.91:1521:oracle1" userId="acq_v3"
+			password="acq_v3" />
+		<javaTypeResolver>
+			<property name="forceBigDecimals" value="false" />
+		</javaTypeResolver>
+
+		<javaModelGenerator targetPackage="com.cnepay.mposRisk.domain"
+			targetProject="gencoder">
+			<property name="enableSubPackages" value="false" />
+			<property name="trimStrings" value="true" />
+		</javaModelGenerator>
+		
+		<sqlMapGenerator targetPackage="com.cnepay.mposRisk.mapper"  targetProject="gencoder">
+    <property name="enableSubPackages" value="true" />
+</sqlMapGenerator>
+    <javaClientGenerator targetPackage="com.cnepay.mposRisk.mapper"
+			targetProject="gencoder" type="XMLMAPPER">
+			<property name="enableSubPackages" value="false" />
+		</javaClientGenerator>
+ 
+	<!-- 	<sqlMapGenerator targetPackage="org.jeecgframework.web.system.dao"
+			targetProject="src/main/java">
+			<property name="enableSubPackages" value="true" />
+		</sqlMapGenerator>-->
+
+	<!-- 	<javaClientGenerator targetPackage="com.cnepay.pos.recon.entity"
+			targetProject="gencoder/src/main/java" type="XMLMAPPER">
+			<property name="enableSubPackages" value="false" />
+		</javaClientGenerator>  --> 
+
+		<table tableName="DICT_TERMINAL_MODEL" domainObjectName="DictTerminalModel" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+	</context>
+</generatorConfiguration>

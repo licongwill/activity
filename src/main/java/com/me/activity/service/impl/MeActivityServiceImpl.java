@@ -3,6 +3,8 @@ package com.me.activity.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.me.activity.service.MeActivityService;
 import org.activiti.engine.*;
+import org.activiti.engine.delegate.event.ActivitiEventListener;
+import org.activiti.engine.delegate.event.ActivitiEventType;
 import org.activiti.engine.repository.DeploymentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +69,42 @@ public class MeActivityServiceImpl implements MeActivityService {
         logger.info("deploymentId is {}",deploymentId);
         repositoryService.deleteDeployment(deploymentId);
         logger.info("end deploymentId");
+    }
+    
+    /**
+    *@Description: addEventListener
+    *@Param: [listenerToAdd]
+    *@return: void
+    *@Author: lic
+    *@date: 2020/1/8
+    */
+    @Override
+    public void addEventListener(ActivitiEventListener listenerToAdd) {
+        runtimeService.addEventListener(listenerToAdd);
+    }
+    
+    /**
+    *@Description: addEventListener
+    *@Param: [listenerToAdd, types]
+    *@return: void
+    *@Author: lic
+    *@date: 2020/1/8
+    */
+    @Override
+    public void addEventListener(ActivitiEventListener listenerToAdd, ActivitiEventType... types) {
+        runtimeService.addEventListener(listenerToAdd,types);
+    }
+    
+    /**
+    *@Description: removeEventListener
+    *@Param: [listenerToRemove]
+    *@return: void
+    *@Author: lic
+    *@date: 2020/1/8
+    */
+    @Override
+    public void removeEventListener(ActivitiEventListener listenerToRemove) {
+        runtimeService.removeEventListener(listenerToRemove);
     }
 
 

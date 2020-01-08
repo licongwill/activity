@@ -2,6 +2,7 @@ package com.me.activity.config;
 
 import org.activiti.engine.*;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.activiti.engine.impl.history.HistoryLevel;
 import org.activiti.spring.ProcessEngineFactoryBean;
 import org.activiti.spring.SpringProcessEngineConfiguration;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,10 +29,20 @@ public class MeProcessEngineConfiguration {
     public ProcessEngineConfigurationImpl processEngineConfiguration(@Qualifier("dataSource") DataSource dataSource,
             PlatformTransactionManager coreTransactionManager){
         SpringProcessEngineConfiguration configuration = new SpringProcessEngineConfiguration();
+        /*数据源*/
         configuration.setDataSource(dataSource);
+        /*事务管理器*/
         configuration.setTransactionManager(coreTransactionManager);
+        /*异步执行默认关闭*/
         configuration.setAsyncExecutorActivate(false);
+        /*是否自动更新数据库版本--默认false*/
         configuration.setDatabaseSchemaUpdate("false");
+        /*历史记录级别-默认为audit*/
+        configuration.setHistoryLevel(HistoryLevel.AUDIT);
+        /*configuration.setBeans(null);  beans is map,配置在beans的对象 对expressions and scripts 可见*/
+        /*configuration.setProcessDefinitionCacheLimit(-1) 流程定义缓存个数默认关闭; 开启的话默认map缓存(规则 LRU)*/
+        /*configuration.setEventListeners(null); 自定义事件监听器*/
+        /*configuration.setTypedEventListeners(null); ActivitiEventType[事件类型] 特定类型的监听事件*/
         return configuration;
     }
 
@@ -39,6 +50,7 @@ public class MeProcessEngineConfiguration {
     @DependsOn(value = {"activityProcessEngineConfiguration"})
     @ConditionalOnMissingBean(ProcessEngineFactoryBean.class)
     public ProcessEngine processEngineFactoryBean(ProcessEngineConfigurationImpl activityProcessEngineConfiguration) throws Exception {
+        /*流程引擎工厂类*/
         ProcessEngineFactoryBean factoryBean = new ProcessEngineFactoryBean();
         factoryBean.setProcessEngineConfiguration(activityProcessEngineConfiguration);
         ProcessEngine processEngine = factoryBean.getObject();

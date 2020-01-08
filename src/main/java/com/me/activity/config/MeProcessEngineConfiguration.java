@@ -31,7 +31,7 @@ public class MeProcessEngineConfiguration {
         configuration.setDataSource(dataSource);
         configuration.setTransactionManager(coreTransactionManager);
         configuration.setAsyncExecutorActivate(false);
-        configuration.setDatabaseSchemaUpdate("true");
+        configuration.setDatabaseSchemaUpdate("false");
         return configuration;
     }
 

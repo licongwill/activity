@@ -1,8 +1,6 @@
 package com.me.activity.config;
 
-import com.alibaba.druid.pool.DruidDataSource;
-import org.activiti.engine.ProcessEngine;
-import org.activiti.engine.RepositoryService;
+import org.activiti.engine.*;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.spring.ProcessEngineFactoryBean;
 import org.activiti.spring.SpringProcessEngineConfiguration;
@@ -11,7 +9,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
@@ -45,14 +42,46 @@ public class MeProcessEngineConfiguration {
         ProcessEngineFactoryBean factoryBean = new ProcessEngineFactoryBean();
         factoryBean.setProcessEngineConfiguration(activityProcessEngineConfiguration);
         ProcessEngine processEngine = factoryBean.getObject();
-
         return processEngine;
     }
 
     @Bean("activityRepositoryService")
-    @DependsOn(value = {"activityProcessEngineFactoryBean"})
-    public RepositoryService repositoryService(ProcessEngine processEngine){
-        RepositoryService repositoryService = processEngine.getRepositoryService();
+    @DependsOn(value = {"activityProcessEngine"})
+    @ConditionalOnMissingBean(RepositoryService.class)
+    public RepositoryService repositoryService(ProcessEngine activityProcessEngine){
+        RepositoryService repositoryService = activityProcessEngine.getRepositoryService();
         return repositoryService;
+    }
+
+    @Bean("activityRuntimeService")
+    @DependsOn(value = {"activityProcessEngine"})
+    @ConditionalOnMissingBean(RuntimeService.class)
+    public RuntimeService runtimeService(ProcessEngine activityProcessEngine){
+        RuntimeService runtimeService = activityProcessEngine.getRuntimeService();
+        return runtimeService;
+    }
+
+    @Bean("taskService")
+    @DependsOn(value = {"activityProcessEngine"})
+    @ConditionalOnMissingBean(TaskService.class)
+    public TaskService taskService(ProcessEngine activityProcessEngine){
+        TaskService taskService = activityProcessEngine.getTaskService();
+        return taskService;
+    }
+
+    @Bean("historyService")
+    @DependsOn(value = {"activityProcessEngine"})
+    @ConditionalOnMissingBean(HistoryService.class)
+    public HistoryService historyService(ProcessEngine activityProcessEngine){
+        HistoryService historyService = activityProcessEngine.getHistoryService();
+        return historyService;
+    }
+
+    @Bean("managementService")
+    @DependsOn(value = {"activityProcessEngine"})
+    @ConditionalOnMissingBean(ManagementService.class)
+    public ManagementService managementService(ProcessEngine activityProcessEngine){
+        ManagementService managementService = activityProcessEngine.getManagementService();
+        return managementService;
     }
 }

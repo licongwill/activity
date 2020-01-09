@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.me.activity.dao.MeSysUserMapper" >
+    <resultMap id="BaseResultMap" type="com.me.activity.po.MeSysUser" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="account" property="account" jdbcType="VARCHAR" />
+        <result column="multi_query" property="multiQuery" jdbcType="VARCHAR" />
+        <result column="password" property="password" jdbcType="VARCHAR" />
+        <result column="realname" property="realname" jdbcType="VARCHAR" />
+        <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+        <result column="birthday" property="birthday" jdbcType="DATE" />
+        <result column="staff_num" property="staffNum" jdbcType="VARCHAR" />
+        <result column="sex" property="sex" jdbcType="TINYINT" />
+        <result column="age" property="age" jdbcType="INTEGER" />
+        <result column="channel" property="channel" jdbcType="TINYINT" />
+        <result column="user_status" property="userStatus" jdbcType="TINYINT" />
+        <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+        <result column="email" property="email" jdbcType="VARCHAR" />
+        <result column="tel" property="tel" jdbcType="VARCHAR" />
+        <result column="address" property="address" jdbcType="VARCHAR" />
+        <result column="img_url" property="imgUrl" jdbcType="VARCHAR" />
+        <result column="industry_name" property="industryName" jdbcType="VARCHAR" />
+        <result column="industry_code" property="industryCode" jdbcType="VARCHAR" />
+        <result column="education" property="education" jdbcType="TINYINT" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+        <result column="yn" property="yn" jdbcType="TINYINT" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="oa_id" property="oaId" jdbcType="VARCHAR" />
+        <result column="state" property="state" jdbcType="TINYINT" />
+        <result column="is_sys_allocation" property="isSysAllocation" jdbcType="TINYINT" />
+        <result column="superior_user_id" property="superiorUserId" jdbcType="VARCHAR" />
+        <result column="leave_date" property="leaveDate" jdbcType="DATE" />
+        <result column="manager_or_frontline" property="managerOrFrontline" jdbcType="VARCHAR" />
+
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+    id, account,multi_query,password, realname, nickname, birthday, staff_num, sex, age, channel,
+    user_status, mobile, email, tel, address, img_url, industry_name, industry_code, 
+    education, create_time, update_time, create_user, update_user, yn, remark,oa_id,state,is_sys_allocation,leave_date,manager_or_frontline
+  </sql>
+    <sql id="Prefix_Base_Column_List">
+    msu.id, msu.account,msu.multi_query,msu.password, msu.realname, msu.nickname, msu.birthday, msu.staff_num, msu.sex, msu.age, msu.channel,
+    msu.user_status, msu.mobile, msu.email, msu.tel, msu.address, msu.img_url, msu.industry_name, msu.industry_code,
+    msu.education, msu.create_time, msu.update_time, msu.create_user, msu.update_user, msu.yn, msu.remark,msu.oa_id,msu.state,msu.is_sys_allocation,msu.superior_user_id
+  </sql>
+
+    <!--根据主键id查询(暂时不用)-->
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM me_sys_user
+        WHERE id=#{id,jdbcType=BIGINT}
+    </select>
+    <!--主键删除(暂时不用)-->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from me_sys_user
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <!--根据用户id修改用户审批状态(暂时不用)-->
+    <update id="updateByUserStatus" parameterType="com.me.activity.po.MeSysUser">
+    update me_sys_user
+    set user_status = #{userStatus,jdbcType=TINYINT},
+    update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <!--新增(暂时不用)-->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.me.activity.po.MeSysUser" >
+    insert into me_sys_user (id, account,multi_query, password,
+      realname, nickname, birthday, 
+      staff_num, sex, age, 
+      channel, user_status, mobile, 
+      email, tel, address, 
+      img_url, industry_name, industry_code, 
+      education, create_time, update_time, 
+      create_user, update_user, yn, 
+      remark)
+    values (#{id,jdbcType=BIGINT}, #{account,jdbcType=VARCHAR},#{multiQuery,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+      #{realname,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, #{birthday,jdbcType=DATE}, 
+      #{staffNum,jdbcType=VARCHAR}, #{sex,jdbcType=TINYINT}, #{age,jdbcType=INTEGER}, 
+      #{channel,jdbcType=TINYINT}, #{userStatus,jdbcType=TINYINT}, #{mobile,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{imgUrl,jdbcType=VARCHAR}, #{industryName,jdbcType=VARCHAR}, #{industryCode,jdbcType=VARCHAR}, 
+      #{education,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, #{yn,jdbcType=TINYINT}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+    <!--新增(暂时不用)-->
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.me.activity.po.MeSysUser" >
+        insert into me_sys_user
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="account != null" >
+                account,
+            </if>
+            <if test="multiQuery != null" >
+                multi_query,
+            </if>
+            <if test="password != null" >
+                password,
+            </if>
+            <if test="realname != null" >
+                realname,
+            </if>
+            <if test="nickname != null" >
+                nickname,
+            </if>
+            <if test="birthday != null" >
+                birthday,
+            </if>
+            <if test="staffNum != null" >
+                staff_num,
+            </if>
+            <if test="sex != null" >
+                sex,
+            </if>
+            <if test="age != null" >
+                age,
+            </if>
+            <if test="channel != null" >
+                channel,
+            </if>
+            <if test="userStatus != null" >
+                user_status,
+            </if>
+            <if test="mobile != null" >
+                mobile,
+            </if>
+            <if test="email != null" >
+                email,
+            </if>
+            <if test="tel != null" >
+                tel,
+            </if>
+            <if test="address != null" >
+                address,
+            </if>
+            <if test="imgUrl != null" >
+                img_url,
+            </if>
+            <if test="industryName != null" >
+                industry_name,
+            </if>
+            <if test="industryCode != null" >
+                industry_code,
+            </if>
+            <if test="education != null" >
+                education,
+            </if>
+            <if test="createTime != null" >
+                create_time,
+            </if>
+            <if test="updateTime != null" >
+                update_time,
+            </if>
+            <if test="createUser != null" >
+                create_user,
+            </if>
+            <if test="updateUser != null" >
+                update_user,
+            </if>
+            <if test="yn != null" >
+                yn,
+            </if>
+            <if test="remark != null" >
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="account != null" >
+                #{account,jdbcType=VARCHAR},
+            </if>
+            <if test="multiQuery != null" >
+                #{multi_query,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null" >
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="realname != null" >
+                #{realname,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null" >
+                #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="birthday != null" >
+                #{birthday,jdbcType=DATE},
+            </if>
+            <if test="staffNum != null" >
+                #{staffNum,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null" >
+                #{sex,jdbcType=TINYINT},
+            </if>
+            <if test="age != null" >
+                #{age,jdbcType=INTEGER},
+            </if>
+            <if test="channel != null" >
+                #{channel,jdbcType=TINYINT},
+            </if>
+            <if test="userStatus != null" >
+                #{userStatus,jdbcType=TINYINT},
+            </if>
+            <if test="mobile != null" >
+                #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null" >
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="tel != null" >
+                #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null" >
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="imgUrl != null" >
+                #{imgUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="industryName != null" >
+                #{industryName,jdbcType=VARCHAR},
+            </if>
+            <if test="industryCode != null" >
+                #{industryCode,jdbcType=VARCHAR},
+            </if>
+            <if test="education != null" >
+                #{education,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null" >
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUser != null" >
+                #{createUser,jdbcType=VARCHAR},
+            </if>
+            <if test="updateUser != null" >
+                #{updateUser,jdbcType=VARCHAR},
+            </if>
+            <if test="yn != null" >
+                #{yn,jdbcType=TINYINT},
+            </if>
+            <if test="remark != null" >
+                #{remark,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <!--修改(暂时不用)-->
+    <update id="updateByPrimaryKeySelective" parameterType="com.me.activity.po.MeSysUser" >
+        update me_sys_user
+        <set >
+            <if test="account != null" >
+                account = #{account,jdbcType=VARCHAR},
+            </if>
+            <if test="multiQuery != null" >
+                multi_query = #{multiQuery,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null" >
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="realname != null" >
+                realname = #{realname,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null" >
+                nickname = #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="birthday != null" >
+                birthday = #{birthday,jdbcType=DATE},
+            </if>
+            <if test="staffNum != null" >
+                staff_num = #{staffNum,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null" >
+                sex = #{sex,jdbcType=TINYINT},
+            </if>
+            <if test="age != null" >
+                age = #{age,jdbcType=INTEGER},
+            </if>
+            <if test="channel != null" >
+                channel = #{channel,jdbcType=TINYINT},
+            </if>
+            <if test="userStatus != null" >
+                user_status = #{userStatus,jdbcType=TINYINT},
+            </if>
+            <if test="mobile != null" >
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null" >
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="tel != null" >
+                tel = #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null" >
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="imgUrl != null" >
+                img_url = #{imgUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="industryName != null" >
+                industry_name = #{industryName,jdbcType=VARCHAR},
+            </if>
+            <if test="industryCode != null" >
+                industry_code = #{industryCode,jdbcType=VARCHAR},
+            </if>
+            <if test="education != null" >
+                education = #{education,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUser != null" >
+                create_user = #{createUser,jdbcType=VARCHAR},
+            </if>
+            <if test="updateUser != null" >
+                update_user = #{updateUser,jdbcType=VARCHAR},
+            </if>
+            <if test="yn != null" >
+                yn = #{yn,jdbcType=TINYINT},
+            </if>
+            <if test="remark != null" >
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <!--修改(暂时不用)-->
+    <update id="updateByPrimaryKey" parameterType="com.me.activity.po.MeSysUser" >
+    update me_sys_user
+    set account = #{account,jdbcType=VARCHAR},
+      multi_query = #{multiQuery,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      realname = #{realname,jdbcType=VARCHAR},
+      nickname = #{nickname,jdbcType=VARCHAR},
+      birthday = #{birthday,jdbcType=DATE},
+      staff_num = #{staffNum,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=TINYINT},
+      age = #{age,jdbcType=INTEGER},
+      channel = #{channel,jdbcType=TINYINT},
+      user_status = #{userStatus,jdbcType=TINYINT},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      img_url = #{imgUrl,jdbcType=VARCHAR},
+      industry_name = #{industryName,jdbcType=VARCHAR},
+      industry_code = #{industryCode,jdbcType=VARCHAR},
+      education = #{education,jdbcType=TINYINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      yn = #{yn,jdbcType=TINYINT},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <!--冻结部门下的所有成员(暂时不用)-->
+    <update id="updateFreezeDeptUser" parameterType="com.me.activity.po.MeSysUser">
+        update me_sys_user
+        set user_status = #{userStatus,jdbcType=TINYINT},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id IN
+        <foreach collection="userIdSet" open="(" close=")" separator="," item="i">
+            #{i,jdbcType=BIGINT}
+        </foreach>
+    </update>
+    <!--用户列表查询-->
+    <select id="selectListByParams" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Prefix_Base_Column_List" />
+        FROM me_sys_user msu
+        <where>
+            <if test="map.superiorUserId!=null and map.superiorUserId!=''">
+                AND msu.superior_user_id = #{map.superiorUserId,jdbcType=VARCHAR}
+            </if>
+            <if test="map.account!=null and map.account!=''">
+                AND  msu.account = #{map.account,jdbcType=VARCHAR}
+            </if>
+            <if test="map.realname!=null and map.realname!=''">
+                AND msu.realname LIKE CONCAT('%',#{map.realname,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="map.nickname!=null and map.nickname!=''">
+                AND msu.nickname LIKE CONCAT('%',#{map.nickname,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="map.staffNum!=null and map.staffNum!=''">
+                AND msu.staff_num = #{map.staffNum,jdbcType=VARCHAR}
+            </if>
+            <if test="map.staffNumsIn!=null and map.staffNumsIn.size()>0">
+                AND msu.staff_num IN
+                <foreach collection="map.staffNumsIn" open="(" close=")" item="i" separator=",">
+                    #{i,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            <if test="map.channel!=null">
+                AND msu.channel=#{map.channel,jdbcType=TINYINT}
+            </if>
+            <if test="map.userStatus!=null">
+                AND msu.user_status=#{map.userStatus,jdbcType=TINYINT}
+            </if>
+            <if test="map.mobile!=null and map.mobile!=''">
+                AND msu.mobile=#{map.mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="map.isSysAllocation!=null">
+                AND msu.is_sys_allocation=#{map.isSysAllocation,jdbcType=TINYINT}
+            </if>
+            <if test="map.startTime != null and map.startTime != ''">
+                and  DATE_FORMAT(msu.create_time,'%Y-%m-%d') <![CDATA[ >= ]]> #{map.startTime}
+            </if>
+            <if test="map.endTime != null and map.endTime != ''">
+                and  DATE_FORMAT(msu.create_time,'%Y-%m-%d') <![CDATA[ <= ]]> #{map.endTime}
+            </if>
+            <if test="map.email!=null and map.email!=''">
+                AND msu.email LIKE CONCAT('%',#{map.email,jdbcType=VARCHAR},'%',)
+            </if>
+            <if test="map.idsIn!=null and map.idsIn.size()>0">
+                AND msu.id IN
+                <foreach collection="map.idsIn" open="(" close=")" item="i" separator=",">
+                    #{i,jdbcType=BIGINT}
+                </foreach>
+            </if>
+            <if test="map.oaId !=null and map.oaId !=''">
+                AND msu.oa_id = #{map.oaId,jdbcType=VARCHAR}
+            </if>
+            <if test="map.oaIdsIn!=null and map.oaIdsIn.size()>0">
+                AND msu.oa_id IN
+                <foreach collection="map.oaIdsIn" open="(" close=")" item="i" separator=",">
+                    #{i,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            <if test="map.superiorUserIdSet!=null and map.superiorUserIdSet.size()>0">
+                AND msu.superior_user_id IN
+                <foreach collection="map.superiorUserIdSet" open="(" close=")" item="i" separator=",">
+                    #{i,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            <if test="map.state!=null">
+                AND msu.state = #{map.state,jdbcType=TINYINT}
+            </if>
+            <if test="map.state==null">
+                AND msu.state =1
+            </if>
+            <if test="map.staffNumOrRealname!=null and map.staffNumOrRealname != ''">
+                AND (msu.staff_num = #{map.staffNumOrRealname,jdbcType=VARCHAR} OR
+                msu.realname LIKE CONCAT('%',#{map.staffNumOrRealname,jdbcType=VARCHAR},'%'))
+            </if>
+        </where>
+        GROUP BY msu.id
+        ORDER BY msu.create_time DESC
+    </select>
+    <!--账号查询-->
+    <select id="selectByAccount" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Prefix_Base_Column_List" />
+        FROM me_sys_user msu
+        WHERE
+
+        msu.account = #{account,jdbcType=VARCHAR}
+
+    </select>
+
+    <!--批量新增-->
+    <insert id="batchAdd" parameterType="com.me.activity.po.MeSysUser" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO me_sys_user (
+        account,multi_query,password,
+        realname, nickname, birthday,
+        staff_num, sex, age,
+        channel, user_status, mobile,
+        email, tel, address,
+        img_url, industry_name, industry_code,
+        education, create_time, update_time,
+        create_user, update_user, yn,
+        remark,oa_id,state,is_sys_allocation,superior_user_id,
+        leave_date,manager_or_frontline
+        )
+        VALUES
+        <foreach collection="list" item="i" separator=",">
+            ( #{i.account,jdbcType=VARCHAR},#{i.multiQuery,jdbcType=VARCHAR}, #{i.password,jdbcType=VARCHAR},
+            #{i.realname,jdbcType=VARCHAR}, #{i.nickname,jdbcType=VARCHAR}, #{i.birthday,jdbcType=DATE},
+            #{i.staffNum,jdbcType=VARCHAR}, #{i.sex,jdbcType=TINYINT}, #{i.age,jdbcType=INTEGER},
+            #{i.channel,jdbcType=TINYINT}, #{i.userStatus,jdbcType=TINYINT}, #{i.mobile,jdbcType=VARCHAR},
+            #{i.email,jdbcType=VARCHAR}, #{i.tel,jdbcType=VARCHAR}, #{i.address,jdbcType=VARCHAR},
+            #{i.imgUrl,jdbcType=VARCHAR}, #{i.industryName,jdbcType=VARCHAR}, #{i.industryCode,jdbcType=VARCHAR},
+            #{i.education,jdbcType=TINYINT}, #{i.createTime,jdbcType=TIMESTAMP}, #{i.updateTime,jdbcType=TIMESTAMP},
+            #{i.createUser,jdbcType=VARCHAR}, #{i.updateUser,jdbcType=VARCHAR}, #{i.yn,jdbcType=TINYINT},
+            #{i.remark,jdbcType=VARCHAR}, #{i.oaId,jdbcType=VARCHAR}, #{i.state,jdbcType=TINYINT},
+            #{i.isSysAllocation,jdbcType=TINYINT}, #{i.superiorUserId,jdbcType=VARCHAR},
+            #{i.leaveDate,jdbcType=DATE}, #{i.managerOrFrontline,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+    <!--批量删除-->
+    <delete id="batchDel" parameterType="java.lang.Long">
+        DELETE FROM me_sys_user
+        WHERE id IN
+        <foreach collection="ids" open="(" item="i" close=")" separator=",">
+            #{i,jdbcType=BIGINT}
+        </foreach>
+    </delete>
+</mapper>

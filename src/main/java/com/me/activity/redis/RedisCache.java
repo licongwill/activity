@@ -1,0 +1,281 @@
+package com.me.activity.redis;
+
+import com.me.activity.exception.CacheManagerPrincipalIdNotAssignedException;
+import com.me.activity.exception.PrincipalIdNullException;
+import com.me.activity.exception.PrincipalInstanceException;
+import com.me.activity.exception.SerializationException;
+import com.me.activity.util.ObjectSerializer;
+import com.me.activity.util.RedisSerializer;
+import com.me.activity.util.StringSerializer;
+import org.apache.shiro.cache.Cache;
+import org.apache.shiro.cache.CacheException;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.util.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
+
+/**
+ * @program: me
+ * @description: redis缓存
+ * @author: lic
+ * @create: 2019-09-19 23:40
+ **/
+public class RedisCache<K, V> implements Cache<K, V> {
+    private static Logger logger = LoggerFactory.getLogger(RedisCache.class);
+
+    private RedisSerializer keySerializer = new StringSerializer();
+    private RedisSerializer valueSerializer = new ObjectSerializer();
+    private SsoRedisManager ssoRedisManager;
+    private String keyPrefix = RedisCacheManager.DEFAULT_CACHE_KEY_PREFIX;
+    private int expire = RedisCacheManager.DEFAULT_EXPIRE;
+    private String principalIdFieldName = RedisCacheManager.DEFAULT_PRINCIPAL_ID_FIELD_NAME;
+
+
+    public RedisCache(SsoRedisManager ssoRedisManager, RedisSerializer keySerializer, RedisSerializer valueSerializer, String prefix, int expire, String principalIdFieldName) {
+        if (ssoRedisManager == null) {
+            throw new IllegalArgumentException("ssoRedisManager cannot be null.");
+        }
+        this.ssoRedisManager = ssoRedisManager;
+        if (keySerializer == null) {
+            throw new IllegalArgumentException("keySerializer cannot be null.");
+        }
+        this.keySerializer = keySerializer;
+        if (valueSerializer == null) {
+            throw new IllegalArgumentException("valueSerializer cannot be null.");
+        }
+        this.valueSerializer = valueSerializer;
+        if (prefix != null && !"".equals(prefix)) {
+            this.keyPrefix = prefix;
+        }
+        this.expire = expire;
+        if (principalIdFieldName != null) {
+            this.principalIdFieldName = principalIdFieldName;
+        }
+    }
+
+
+    @Override
+    public V get(K key) throws CacheException {
+        logger.debug("get key [" + key + "]");
+
+        if (key == null) {
+            return null;
+        }
+
+        try {
+            Object redisCacheKey = getRedisCacheKey(key);
+            byte[] rawValue = ssoRedisManager.get(keySerializer.serialize(redisCacheKey));
+            if (rawValue == null) {
+                return null;
+            }
+            V value = (V) valueSerializer.deserialize(rawValue);
+            return value;
+        } catch (SerializationException e) {
+            throw new CacheException(e);
+        }
+    }
+
+    @Override
+    public V put(K key, V value) throws CacheException {
+        if (key == null) {
+            logger.warn("Saving a null key is meaningless, return value directly without call Redis.");
+            return value;
+        }
+        try {
+            Object redisCacheKey = getRedisCacheKey(key);
+            logger.debug("put key [" + redisCacheKey + "]");
+            ssoRedisManager.set(keySerializer.serialize(redisCacheKey), value != null ? valueSerializer.serialize(value) : null, expire);
+            return value;
+        } catch (SerializationException e) {
+            throw new CacheException(e);
+        }
+    }
+
+    @Override
+    public V remove(K key) throws CacheException {
+        logger.debug("remove key [" + key + "]");
+        if (key == null) {
+            return null;
+        }
+        try {
+            Object redisCacheKey = getRedisCacheKey(key);
+            byte[] rawValue = ssoRedisManager.get(keySerializer.serialize(redisCacheKey));
+            V previous = (V) valueSerializer.deserialize(rawValue);
+            ssoRedisManager.del(keySerializer.serialize(redisCacheKey));
+            return previous;
+        } catch (SerializationException e) {
+            throw new CacheException(e);
+        }
+    }
+
+    private Object getRedisCacheKey(K key) {
+        if (key == null) {
+            return null;
+        }
+        if (keySerializer instanceof StringSerializer) {
+            return this.keyPrefix + getStringRedisKey(key);
+        }
+        return key;
+    }
+
+    private String getStringRedisKey(K key) {
+        String redisKey;
+        if (key instanceof PrincipalCollection) {
+            redisKey = getRedisKeyFromPrincipalIdField((PrincipalCollection) key);
+        }else {
+            redisKey = key.toString();
+        }
+        return redisKey;
+    }
+
+    private String getRedisKeyFromPrincipalIdField(PrincipalCollection key) {
+        Object principalObject = key.getPrimaryPrincipal();
+        if (principalObject instanceof String) {
+            return principalObject.toString();
+        }
+        Method pincipalIdGetter = getPrincipalIdGetter(principalObject);
+        return getIdObj(principalObject, pincipalIdGetter);
+    }
+
+    private String getIdObj(Object principalObject, Method pincipalIdGetter) {
+        String redisKey;
+        try {
+            Object idObj = pincipalIdGetter.invoke(principalObject);
+            if (idObj == null) {
+                throw new PrincipalIdNullException(principalObject.getClass(), this.principalIdFieldName);
+            }
+            redisKey = idObj.toString();
+        } catch (IllegalAccessException e) {
+            throw new PrincipalInstanceException(principalObject.getClass(), this.principalIdFieldName, e);
+        } catch (InvocationTargetException e) {
+            throw new PrincipalInstanceException(principalObject.getClass(), this.principalIdFieldName, e);
+        }
+        return redisKey;
+    }
+
+    private Method getPrincipalIdGetter(Object principalObject) {
+        Method pincipalIdGetter = null;
+        String principalIdMethodName = this.getPrincipalIdMethodName();
+        try {
+            pincipalIdGetter = principalObject.getClass().getMethod(principalIdMethodName);
+        } catch (NoSuchMethodException e) {
+            throw new PrincipalInstanceException(principalObject.getClass(), this.principalIdFieldName);
+        }
+        return pincipalIdGetter;
+    }
+
+    private String getPrincipalIdMethodName() {
+        if (this.principalIdFieldName == null || "".equals(this.principalIdFieldName)) {
+            throw new CacheManagerPrincipalIdNotAssignedException();
+        }
+        return "get" + this.principalIdFieldName.substring(0, 1).toUpperCase() + this.principalIdFieldName.substring(1);
+    }
+
+
+    @Override
+    public void clear() throws CacheException {
+        logger.debug("clear cache");
+        Set<byte[]> keys = null;
+        try {
+            keys = ssoRedisManager.keys(keySerializer.serialize(this.keyPrefix + "*"));
+        } catch (SerializationException e) {
+            logger.error("get keys error", e);
+        }
+        if (keys == null || keys.size() == 0) {
+            return;
+        }
+        for (byte[] key: keys) {
+            ssoRedisManager.del(key);
+        }
+    }
+
+    /**
+     * get all authorization key-value quantity
+     * @return key-value size
+     */
+    @Override
+    public int size() {
+        Long longSize = 0L;
+        try {
+            longSize = new Long(ssoRedisManager.dbSize(keySerializer.serialize(this.keyPrefix + "*")));
+        } catch (SerializationException e) {
+            logger.error("get keys error", e);
+        }
+        return longSize.intValue();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Set<K> keys() {
+        Set<byte[]> keys = null;
+        try {
+            keys = ssoRedisManager.keys(keySerializer.serialize(this.keyPrefix + "*"));
+        } catch (SerializationException e) {
+            logger.error("get keys error", e);
+            return Collections.emptySet();
+        }
+
+        if (CollectionUtils.isEmpty(keys)) {
+            return Collections.emptySet();
+        }
+
+        Set<K> convertedKeys = new HashSet<K>();
+        for (byte[] key:keys) {
+            try {
+                convertedKeys.add((K) keySerializer.deserialize(key));
+            } catch (SerializationException e) {
+                logger.error("deserialize keys error", e);
+            }
+        }
+        return convertedKeys;
+    }
+
+    @Override
+    public Collection<V> values() {
+        Set<byte[]> keys = null;
+        try {
+            keys = ssoRedisManager.keys(keySerializer.serialize(this.keyPrefix + "*"));
+        } catch (SerializationException e) {
+            logger.error("get values error", e);
+            return Collections.emptySet();
+        }
+
+        if (CollectionUtils.isEmpty(keys)) {
+            return Collections.emptySet();
+        }
+
+        List<V> values = new ArrayList<V>(keys.size());
+        for (byte[] key : keys) {
+            V value = null;
+            try {
+                value = (V) valueSerializer.deserialize(ssoRedisManager.get(key));
+            } catch (SerializationException e) {
+                logger.error("deserialize values= error", e);
+            }
+            if (value != null) {
+                values.add(value);
+            }
+        }
+        return Collections.unmodifiableList(values);
+    }
+
+    public String getKeyPrefix() {
+        return keyPrefix;
+    }
+
+    public void setKeyPrefix(String keyPrefix) {
+        this.keyPrefix = keyPrefix;
+    }
+
+    public String getPrincipalIdFieldName() {
+        return principalIdFieldName;
+    }
+
+    public void setPrincipalIdFieldName(String principalIdFieldName) {
+        this.principalIdFieldName = principalIdFieldName;
+    }
+}

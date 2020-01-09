@@ -39,10 +39,13 @@ public class MeProcessEngineConfiguration {
         configuration.setDatabaseSchemaUpdate("false");
         /*历史记录级别-默认为audit*/
         configuration.setHistoryLevel(HistoryLevel.AUDIT);
+        /*部署是自动创建图表*/
+        configuration.setCreateDiagramOnDeploy(true);
         /*configuration.setBeans(null);  beans is map,配置在beans的对象 对expressions and scripts 可见*/
         /*configuration.setProcessDefinitionCacheLimit(-1) 流程定义缓存个数默认关闭; 开启的话默认map缓存(规则 LRU)*/
         /*configuration.setEventListeners(null); 自定义事件监听器*/
         /*configuration.setTypedEventListeners(null); ActivitiEventType[事件类型] 特定类型的监听事件*/
+        /*configuration.getDeploymentResources() spring 自动部署工作流*/
         return configuration;
     }
 

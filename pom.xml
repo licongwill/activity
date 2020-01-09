@@ -43,10 +43,15 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		<!--<dependency>
+			<groupId>org.activiti</groupId>
+			<artifactId>activiti-spring-boot-starter-basic</artifactId>
+			<version>${activiti.version}</version>
+		</dependency>-->
 		<!-- https://mvnrepository.com/artifact/org.activiti/activiti-engine -->
 		<dependency>
 			<groupId>org.activiti</groupId>
-			<artifactId>activiti-engine</artifactId>
+			<artifactId>activiti5-engine</artifactId>
 			<version>${activiti.version}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.activiti/activiti-spring -->

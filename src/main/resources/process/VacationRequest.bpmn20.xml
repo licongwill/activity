@@ -10,10 +10,12 @@
     <startEvent id="request" activiti:initiator="employeeName">
       <extensionElements>
         <activiti:formProperty id="numberOfDays" name="Number of days" type="long" value="1" required="true"/>
-        <activiti:formProperty id="startDate" name="First day of holiday (dd-MM-yyy)" datePattern="dd-MM-yyyy hh:mm" type="date" required="true" />
+        <activiti:formProperty id="startDate" name="First day of holiday (dd-MM-yyy)" datePattern="dd-MM-yyyy hh:mm"
+               type="date" required="true" />
         <activiti:formProperty id="vacationMotivation" name="Motivation" type="string" />
       </extensionElements>
     </startEvent>
+
     <sequenceFlow id="flow1" sourceRef="request" targetRef="handleRequest" />
 
     <userTask id="handleRequest" name="Handle vacation request" >
@@ -33,6 +35,7 @@
         </resourceAssignmentExpression>
       </potentialOwner>
     </userTask>
+
     <sequenceFlow id="flow2" sourceRef="handleRequest" targetRef="requestApprovedDecision" />
 
     <exclusiveGateway id="requestApprovedDecision" name="Request approved?" />

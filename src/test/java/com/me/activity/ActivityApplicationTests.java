@@ -86,8 +86,11 @@ class ActivityApplicationTests {
 	*/
 	@Test
 	public void createDeployment(){
-		DeploymentBuilder deployment = repositoryService.createDeployment();
+		/*DeploymentBuilder deployment = repositoryService.createDeployment();
 		Deployment deploy = deployment.name("部署请假流程").category("部署请假流程").key("vacationRequest").enableDuplicateFiltering()
+				.deploymentProperty("test", "test").addClasspathResource("process/VacationRequest.bpmn20.xml").deploy();*/
+		DeploymentBuilder deployment = repositoryService.createDeployment();
+		Deployment deploy = deployment.name("部署请假流程").category("部署请假流程").key("vacationRequest")
 				.deploymentProperty("test", "test").addClasspathResource("process/VacationRequest.bpmn20.xml").deploy();
 		logger.info("deploy is {}",deploy);
 	}
